@@ -2,8 +2,8 @@
 const { Configuration, OpenAIApi } = require("openai");
 
 const configuration = new Configuration({
-    organization: 'org-QJcVnKQ7TKqjkxoj3aDY3uHO',
-    apiKey: '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',
+    organization: process.env.OPENAI_ORGANIZATION,
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 const openai = new OpenAIApi(configuration);
@@ -23,4 +23,3 @@ const ImgGen = async () => {
 }
 
 ImgGen();
-

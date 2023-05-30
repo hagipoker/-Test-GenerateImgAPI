@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { GenerateImg } from "./api/chat";
 
-
-
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState();
@@ -62,11 +60,15 @@ export default function Home() {
   
   const GenerateImg = async () => {
     const { Configuration, OpenAIApi } = require("openai");
+    console.log("test1");
     const configuration = new Configuration({
       organization: 'org-QJcVnKQ7TKqjkxoj3aDY3uHO',
-      apiKey: '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',
+      apiKey: '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',
     });
+    delete configuration.baseOptions.headers['User-Agent'];
+    console.log("test2");
     const openai = new OpenAIApi(configuration);
+    console.log("test3");
     // const prompt = JSON.stringify(response.content);
     const imgResponse = await openai.createImage({
       prompt:JSON.stringify(response.content),

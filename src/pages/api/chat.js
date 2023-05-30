@@ -13,8 +13,10 @@ const openai = new OpenAIApi(configuration);
   단, 이 설정을 항상 확실히 참조하지는 않음
   이 설정은 메시지 목록의 첫 번째 메시지로 사용됨
 */
-const systemPrompt =
-  "입력된 내용들을 하나의 짧은 문장으로 요약해서 알려줘.";
+// const systemPrompt =
+//   "입력된 내용을 영어로 번역 후 하나의 짧은 영어 문장으로 요약해줘.";
+
+const systemPrompt = "입력된 내용을 영어로 번역 후 하나의 짧은 영어 문장으로 요약해줘.";
 
 export default async (req, res) => {
   if (req.method !== "POST") {
