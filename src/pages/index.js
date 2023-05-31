@@ -3,17 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { GenerateImg } from "./api/chat";
 
-import { Configuration, OpenAIApi } from "openai";
 
 
 export default function Home() {
-  const configuration = new Configuration({
-    organization: process.env.OPENAI_ORGANIZATION,
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-  
-  const openai = new OpenAIApi(configuration);
-
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState();
   const textareaRef = useRef(null);
@@ -67,14 +59,23 @@ export default function Home() {
     }
   }, [content]);
 
-
+  
   const GenerateImg = async () => {
+    const { Configuration, OpenAIApi } = require("openai");
+    const configuration = new Configuration({
+      organization: 'org-QJcVnKQ7TKqjkxoj3aDY3uHO',
+      apiKey: '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',
+    });
+    const openai = new OpenAIApi(configuration);
+    // const prompt = JSON.stringify(response.content);
     const imgResponse = await openai.createImage({
-      prompt: JSON.stringify(response.content),
+      prompt:JSON.stringify(response.content),
       n:1,
       size: "256x256",
-    });
-    console.log(imgResponse.data.data[0].url);
+    })
+    console.log(JSON.stringify(response.content));
+    const url = imgResponse.data.data[0].url;
+    console.log(url);
   };
 
   return (

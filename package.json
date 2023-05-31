@@ -1,6 +1,8 @@
 {
   "name": "chatbot",
   "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,6 +10,9 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "@tabler/icons-react": "^2.18.0",
     "autoprefixer": "10.4.14",

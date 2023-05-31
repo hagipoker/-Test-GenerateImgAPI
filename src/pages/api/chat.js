@@ -14,7 +14,7 @@ const openai = new OpenAIApi(configuration);
   이 설정은 메시지 목록의 첫 번째 메시지로 사용됨
 */
 const systemPrompt =
-  "입력된 내용들을 하나의 짧은 문장으로 알려줘.";
+  "입력된 내용들을 하나의 짧은 문장으로 요약해서 알려줘.";
 
 export default async (req, res) => {
   if (req.method !== "POST") {
@@ -59,11 +59,4 @@ export default async (req, res) => {
   });
 };
 
-export const GenerateImg = async (response) => {
-  const imgResponse = await openai.createImage({
-    prompt: JSON.stringify(response),
-    n:1,
-    size: "256x256",
-  });
-  console.log(imgResponse.data.data[0].url);
-};
+
