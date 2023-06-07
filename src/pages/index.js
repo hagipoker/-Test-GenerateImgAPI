@@ -2,8 +2,39 @@
 // import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
 import { GenerateImg } from "./api/chat";
+// import { writeFileSync } from "fs";
+import { saveAs } from 'file-saver';
+// const { writeFileSync } = require('fs');
 
-export default function Home() {
+// firebase 관련 모듈을 불러옵니다.
+
+import { app, db, auth } from "@/firebase";
+import {
+  collection,
+  query,
+  doc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  orderBy,
+  where,
+} from "firebase/firestore";
+
+import {
+  getStorage,
+  ref,
+  // uploadBytes,
+  uploadBytesResumable,
+  getDownloadURL,
+  uploadBytes,
+  uploadString,
+} from "firebase/storage";
+
+const imgCollection = collection(db, "urls");
+// const imgStorage = getStorage(app, "storage 주소");
+
+export default function Home(storage) {
   const [messages, setMessages] = useState([]);
   const [content, setContent] = useState();
   const textareaRef = useRef(null);
@@ -63,7 +94,7 @@ export default function Home() {
     console.log("test1");
     const configuration = new Configuration({
       organization: 'org-QJcVnKQ7TKqjkxoj3aDY3uHO',
-      apiKey: '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',
+      apiKey: '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',
     });
     delete configuration.baseOptions.headers['User-Agent'];
     console.log("test2");
@@ -75,10 +106,47 @@ export default function Home() {
       n:1,
       size: "256x256",
     })
-    console.log(JSON.stringify(response.content));
+    
     const url = imgResponse.data.data[0].url;
     console.log(url);
+
+    loadImage(url)
+      .then(image => convertImageToBase64(image))
+      .then(base64String => {
+        console.log('Base64 string:', base64String);
+        // Perform further operations with the base64String, such as uploading to Firebase Storage
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+
+    var storage = getStorage(app);
+    var filename = 'cat.jpg';
+    var storageRef = ref(storage, "images/" + filename);
   };
+
+  const uploadImgToStorage = async (imageBlob) => {
+    var storage = getStorage(app);
+    var filename = 'cat.jpg';
+    var storageRef = ref(storage, "images/" + filename);
+
+    // uploadBytes(storageRef, imageBlob, { contentType: 'image/jpeg' });
+    // var uploadTask = uploadBytes(storageRef, imageBlob, { contentType: 'image/jpeg' });
+    // uploadTask
+    //   .then((snapshot) => {
+    //     console.log("Image uploaded successfully");
+
+    //     // Retrieve the publicly accessible URL of the uploaded image
+    //     getDownloadURL(snapshot.ref).then((downloadURL) => {
+    //       console.log("Image download URL:", downloadURL);
+    //       // Do something with the downloadURL, such as saving it to a database
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error uploading image:", error);
+    //   });
+  };
+  
 
   return (
     <div className="relative">

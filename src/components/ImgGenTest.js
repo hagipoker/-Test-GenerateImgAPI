@@ -23,3 +23,5 @@ const ImgGen = async () => {
 }
 
 ImgGen();
+
+// 이미지는 db에 저장X b/c 용량이 커서. storage에 저장함.
