@@ -25,3 +25,4 @@ const ImgGen = async () => {
 ImgGen();
 
 // 이미지는 db에 저장X b/c 용량이 커서. storage에 저장함.
+// 이미지는 Storage 저장 후 저장된 위치 URL을 DB에 저장한다.

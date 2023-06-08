@@ -5,6 +5,7 @@ import { GenerateImg } from "./api/chat";
 // import { writeFileSync } from "fs";
 import { saveAs } from 'file-saver';
 // const { writeFileSync } = require('fs');
+import axios from "axios";
 
 // firebase 관련 모듈을 불러옵니다.
 
@@ -90,63 +91,66 @@ export default function Home(storage) {
 
   
   const GenerateImg = async () => {
+    console.log("GENERATING ...");
+    
     const { Configuration, OpenAIApi } = require("openai");
-    console.log("test1");
     const configuration = new Configuration({
       organization: 'org-QJcVnKQ7TKqjkxoj3aDY3uHO',
-      apiKey: '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',
+      apiKey: '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',
     });
     delete configuration.baseOptions.headers['User-Agent'];
-    console.log("test2");
     const openai = new OpenAIApi(configuration);
-    console.log("test3");
-    // const prompt = JSON.stringify(response.content);
     const imgResponse = await openai.createImage({
       prompt:JSON.stringify(response.content),
       n:1,
       size: "256x256",
+      response_format: 'b64_json',
     })
-    
-    const url = imgResponse.data.data[0].url;
-    console.log(url);
 
-    loadImage(url)
-      .then(image => convertImageToBase64(image))
-      .then(base64String => {
-        console.log('Base64 string:', base64String);
-        // Perform further operations with the base64String, such as uploading to Firebase Storage
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-
-    var storage = getStorage(app);
-    var filename = 'cat.jpg';
-    var storageRef = ref(storage, "images/" + filename);
+    const blob = b64toBlob(imgResponse.data.data[0].b64_json);
+    uploadImgToStorage(blob);
   };
+
+  const b64toBlob = (base64Image) => {
+    const byteCharacters = atob(base64Image);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const arrayBuffer = byteArray.buffer;
+    return new Blob([arrayBuffer], { type: 'image/jpeg' });
+  }
 
   const uploadImgToStorage = async (imageBlob) => {
     var storage = getStorage(app);
     var filename = 'cat.jpg';
     var storageRef = ref(storage, "images/" + filename);
-
     // uploadBytes(storageRef, imageBlob, { contentType: 'image/jpeg' });
-    // var uploadTask = uploadBytes(storageRef, imageBlob, { contentType: 'image/jpeg' });
-    // uploadTask
-    //   .then((snapshot) => {
-    //     console.log("Image uploaded successfully");
+    var uploadTask = uploadBytes(storageRef, imageBlob, { contentType: 'image/jpeg' });
+    uploadTask
+      .then((snapshot) => {
+        console.log("Image uploaded successfully");
 
-    //     // Retrieve the publicly accessible URL of the uploaded image
-    //     getDownloadURL(snapshot.ref).then((downloadURL) => {
-    //       console.log("Image download URL:", downloadURL);
-    //       // Do something with the downloadURL, such as saving it to a database
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error uploading image:", error);
-    //   });
+        // Retrieve the publicly accessible URL of the uploaded image
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          console.log("Image download URL:", downloadURL);
+          setImageContainer(downloadURL);
+          // Do something with the downloadURL, such as saving it to a database
+        });
+      })
+      .catch((error) => {
+        console.error("Error uploading image:", error);
+      });
   };
-  
+
+  const setImageContainer = (url) => {
+    const imageContainer = document.getElementById('image-container');
+    const imgElement = document.createElement('img');
+    imgElement.src = url;
+    if (imageContainer.firstChild != null) imageContainer.firstChild.remove();
+    imageContainer.appendChild(imgElement);
+  }
 
   return (
     <div className="relative">
@@ -164,6 +168,7 @@ export default function Home(storage) {
         {response.content}
       </div>
       <button onClick={GenerateImg}>Generate Image</button>
+      <div id="image-container"></div>
     </div>
   );
 }
